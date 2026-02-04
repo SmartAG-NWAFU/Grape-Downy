@@ -4,7 +4,7 @@ import seaborn as sns
 from matplotlib import pyplot as plt
 
 # --- 配置本地文件路径 ---
-file_path = r'data\comparsion.csv' 
+file_path = r'data\fig.11.csv' 
 
 # *** 导入表格数据 ***
 try:
