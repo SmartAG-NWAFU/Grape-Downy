@@ -1,4 +1,4 @@
-# Dsm4GdmSE: A Dual-stage Segmentation Model for Grape Downy Mildew Severity Evaluation
+# DSLL-Net: A Dual-Stage Leaf–Lesion Segmentation Framework for Automated Plant Disease Severity Quantification
 
 
 
