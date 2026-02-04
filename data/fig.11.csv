@@ -1,4 +1,4 @@
-Model,IoU-leaf(%),IoU-disease (%),Params(M),TPI(ms)
+Model,IoU-leaf(%),IoU-disease (%),Params(M),Inference Time(ms)
 U-Net,92.62,70.84,24.89,1131
 HRNet,89.18,65.05,9.64,451
 PSPNet,89.69,58.88,2.38,392
