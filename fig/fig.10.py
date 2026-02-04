@@ -15,8 +15,8 @@ plt.rcParams['mathtext.bf'] = 'Times New Roman:bold'
 sns.set_style("white")
 
 # ===================== 2️⃣ 文件路径 =====================
-predicted_csv = r"data\predict.csv"
-true_csv = r"data\true.csv"
+predicted_csv = r"data\fig.10-predict.csv"
+true_csv = r"data\fig.10-true.csv"
 output_fig = r"fig10.png"
 
 # ===================== 3️⃣ 读取并合并数据 =====================
