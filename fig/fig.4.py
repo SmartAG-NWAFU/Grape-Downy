@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 def plot_model_comparison_bar():
     plt.rcParams.update({'font.family': 'Times New Roman', 'font.size': 10})
 
-    file = r'C:\model\deeplabv3-plus-pytorch-main2\miou_out\model.csv'
+    file = 'fig/fig.4.csv'
     df = pd.read_csv(file)
     models = df['Model'].tolist()
     x = np.arange(len(models))
@@ -104,3 +104,4 @@ def plot_model_comparison_bar():
     plt.show()
 
 plot_model_comparison_bar()
+
