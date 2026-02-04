@@ -7,7 +7,7 @@ def plot_all_metrics_as_bar_chart():
     plt.rcParams.update({'font.family': 'Times New Roman', 'font.size': 10})
 
     # 数据文件
-    file = r'data\result_lesion\Conv.csv'
+    file = r'data\result_lesion\fig.9.csv'
     df = pd.read_csv(file)
     models = df['Model'].tolist()
     x = np.arange(len(models))
@@ -92,3 +92,4 @@ def plot_all_metrics_as_bar_chart():
     plt.show()
 
 plot_all_metrics_as_bar_chart()
+
