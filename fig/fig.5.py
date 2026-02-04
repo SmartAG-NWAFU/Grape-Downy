@@ -6,7 +6,7 @@ import seaborn as sns
 def plot_model_comparison_bar():
     plt.rcParams.update({'font.family': 'Times New Roman', 'font.size': 10})
 
-    file = 'data/fig.5.csv'
+    file = 'data/result_leaf/fig.5.csv'
     df = pd.read_csv(file)
     models = df['Model'].tolist()
     x = np.arange(len(models))
@@ -102,4 +102,5 @@ def plot_model_comparison_bar():
     plt.show()
 
 plot_model_comparison_bar()
+
 
