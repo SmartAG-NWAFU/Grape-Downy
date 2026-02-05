@@ -5,7 +5,11 @@
 
 
 https://github.com/user-attachments/assets/e05af7fc-8845-4dc5-8f16-1f107f29ba6f
-🍇  Click Recognize, then tap Severity to start the evaluation.APK[https://pan.baidu.com/s/1tD8Prt2x_OLmbxFoq8VJIw?pwd=d419 提取码: d419]
+
+🍇  Click Recognize, then tap Severity to start the evaluation.
+
+APK[https://pan.baidu.com/s/1tD8Prt2x_OLmbxFoq8VJIw?pwd=d419 提取码: d419]
+
 ## Prerequisites
 
 ### Clone the Repository
