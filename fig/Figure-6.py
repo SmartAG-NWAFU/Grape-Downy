@@ -87,7 +87,7 @@ def plot_model_comparison_as_bar_chart():
                fontsize=9, ncol=6, frameon=False)
 
     plt.tight_layout(pad=0.4, rect=[0, 0, 1, 0.95])
-    plt.savefig(r"Figure.jpg",
+    plt.savefig(r"Figure-6.jpg",
                 dpi=300, bbox_inches='tight')
     plt.show()
 
