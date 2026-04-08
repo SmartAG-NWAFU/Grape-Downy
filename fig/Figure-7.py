@@ -86,7 +86,7 @@ def plot_all_metrics_as_bar_chart():
                fontsize=9, ncol=6, frameon=False)
 
     plt.tight_layout(pad=0.4, rect=[0, 0, 1, 0.95])
-    plt.savefig(r"Fig_7_bar_all_blacktext.png",
+    plt.savefig(r"Fig_7.png",
                 dpi=300, bbox_inches='tight')
     plt.show()
 
