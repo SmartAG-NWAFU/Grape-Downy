@@ -161,7 +161,7 @@ def plot_model_comparison_bar(df, shift_index=6, label_shift=0.2):
         columnspacing=1.2
     )
 
-    plt.savefig("model_comparison_bar_chart.png", dpi=300, bbox_inches='tight')
+    plt.savefig("Figure-11.png", dpi=300, bbox_inches='tight')
     plt.show()
 
 
