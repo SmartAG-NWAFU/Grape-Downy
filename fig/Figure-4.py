@@ -99,7 +99,7 @@ def plot_model_comparison_bar():
                fontsize=9, ncol=6, frameon=False)
 
     plt.tight_layout(pad=0.4, rect=[0, 0, 1, 0.95])
-    plt.savefig(r"Fig4.png",
+    plt.savefig(r"Figure-4.jpg",
                 dpi=300, bbox_inches='tight')
     plt.show()
 
