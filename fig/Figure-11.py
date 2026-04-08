@@ -18,7 +18,7 @@ try:
         'IoU-Leaf(%)': 'IoU-Leaf(%)',
         'IoU-Disease(%)': 'IoU-Disease(%)',
         'Params(M)': 'Params(M)',
-        'TPI(ms)': 'TPI(ms)',
+        'Inference Time(ms)': 'Inference Time(ms)',
     }
     
     current_cols = df.columns.tolist()
@@ -43,7 +43,7 @@ try:
         df.rename(columns=rename_dict, inplace=True)
         print(f"进行了列名重命名: {rename_dict}")
 
-    numeric_cols = ['IoU-leaf(%)', 'IoU-disease(%)', 'Params(M)', 'TPI(ms)']
+    numeric_cols = ['IoU-leaf(%)', 'IoU-disease(%)', 'Params(M)', 'Inference Time(ms)']
     for col in numeric_cols:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors='coerce').astype(float)
@@ -71,7 +71,7 @@ def plot_model_comparison_bar(df, shift_index=6, label_shift=0.2):
     }
 
     params = df['Params(M)'].tolist()
-    inference_time = df['TPI(ms)'].tolist()
+    inference_time = df['Inference Time(ms)'].tolist()
 
     # --- 配色 ---
     palette = sns.color_palette("Set2", 8)
@@ -79,7 +79,7 @@ def plot_model_comparison_bar(df, shift_index=6, label_shift=0.2):
         'IoU-Leaf (%)': palette[0],
         'IoU-Disease (%)': palette[1],
         'Params (M)': palette[2],
-        'TPI (ms)': palette[3]
+        'Inference Time (ms)': palette[3]
     }
 
     width = 0.15
@@ -108,16 +108,16 @@ def plot_model_comparison_bar(df, shift_index=6, label_shift=0.2):
     ax2.set_ylim(0, 40)
     ax2.spines["right"].set_edgecolor(color_dict['Params (M)'])
 
-    # --- TPI (ms) ---
+    # --- Inference Time (ms) ---
     ax3 = ax1.twinx()
     ax3.spines["right"].set_position(("axes", 1.1))
     offset_t = 2.5 * width
     ax3.bar(x + offset_t, inference_time, width=width,
-            color=color_dict['TPI (ms)'], label='TPI (ms)',
+            color=color_dict['Inference Time (ms)'], label='Inference Time (ms)',
             alpha=0.85, zorder=1)
-    ax3.set_ylabel('TPI (ms)', fontsize=12)
+    ax3.set_ylabel('Inference Time (ms)', fontsize=12)
     ax3.set_ylim(300, 2500)
-    ax3.spines["right"].set_edgecolor(color_dict['TPI (ms)'])
+    ax3.spines["right"].set_edgecolor(color_dict['Inference Time (ms)'])
 
     # --- 数据标签 ---
     for offset, values in [(-0.5 * width, metrics['IoU-Leaf (%)']), (0.5 * width, metrics['IoU-Disease (%)'])]:
