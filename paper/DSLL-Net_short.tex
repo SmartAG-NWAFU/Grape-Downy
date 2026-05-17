@@ -1,0 +1,801 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+
+\author{}
+\date{}
+
+\begin{document}
+
+\textbf{DSLL-Net: A Dual-Stage Leaf--Lesion Segmentation Framework for
+Automated Plant Disease Severity Quantification}
+
+Changqing Yan\textsuperscript{a}, Shuyang Li\textsuperscript{a}, Zhe
+Liu\textsuperscript{a}, Ling Yin \textsuperscript{b}, Shumei Wei
+\textsuperscript{b}, Xin Lin\textsuperscript{a}, Xin
+Li\textsuperscript{a}, Jindong Liu\textsuperscript{a}, Zhenpeng
+Huang\textsuperscript{a}, Danni Zheng\textsuperscript{a}, Zeyun
+Liang\textsuperscript{a}, Qi Tian\textsuperscript{c}, Linjia
+Yao\textsuperscript{c}, Bin Chen \textsuperscript{d}, Chenliang
+Wang\textsuperscript{e}, Junjie Qu\textsuperscript{b}*, Gang Zhao
+\textsuperscript{d*}
+
+\textsuperscript{a}College of Intelligent Equipment, Shandong University
+of Science and Technology, Taian 271019, China
+
+\textsuperscript{b}Guangxi Crop Genetic Improvement and Biotechnology
+Key Lab, Guangxi Academy of Agricultural Sciences, Nanning 530007, China
+
+\textsuperscript{c}College of Natural Resources and Environment,
+Northwest A \& F University, Yangling 712100, China
+
+\textsuperscript{d}State Key Laboratory of Soil and Water Conservation
+and Desertification Control, College of Soil and Water Conservation
+Science and Engineering, Northwest A\&F University, Yangling 712100,
+China
+
+\textsuperscript{e}School of Data Science and Artificial Intelligence,
+Wenzhou University of Technology, Wenzhou 325000, China
+
+*Corresponding author: Gang Zhao, E-mail address:
+\href{mailto:gang.zhao@nwafu.edu.cn}{\nolinkurl{gang.zhao@nwafu.edu.cn}};
+Junjie Qu, Email address: qujunjie@gxaas.net
+
+\hypertarget{abstract}{%
+\section{Abstract}\label{abstract}}
+
+Quantitative disease severity assessment from field images requires
+accurate estimation of both leaf and lesion areas, yet complex
+backgrounds, illumination variation, occlusion, and small lesion patterns
+remain challenging. This study proposes DSLL-Net, a lightweight
+dual-stage leaf--lesion segmentation framework for grapevine downy mildew
+severity quantification. DSLL-Net first segments leaves using DeepLabV3+
+with a SimAM-enhanced MobileNetV3 backbone, and then delineates lesions
+with an improved U-Net integrating a SimAM-EfficientNet-B0 encoder and a
+RepConv decoder. This task decomposition reduces feature interference
+between leaf boundaries and disease symptoms while maintaining
+computational efficiency. Experiments on field datasets show that
+DSLL-Net achieves a favorable accuracy--efficiency trade-off, with a
+lesion IoU of 74.3\% using 12.56 M parameters. Severity estimates derived
+from segmented leaf and lesion areas strongly agree with reference values
+(\(R^{2}=0.976\)). The framework was further integrated into an Android
+application, demonstrating its potential for field-oriented disease
+monitoring and decision support.
+
+\hypertarget{introduction}{%
+\section{Introduction}\label{introduction}}
+
+Crop diseases threaten agricultural production and require accurate
+severity assessment for disease management, fungicide evaluation, yield
+loss estimation, and resistance screening {[}1-5{]}. Conventional visual
+assessment is subjective and difficult to reproduce {[}6-8{]}. Although
+image-level classification methods can assign disease samples to
+predefined severity grades {[}9{]}, they provide coarse estimates and
+depend heavily on manually defined categories.
+
+Pixel-wise semantic segmentation enables more quantitative severity
+estimation by calculating lesion coverage on leaf regions {[}10{]}.
+Recent segmentation methods have improved disease detection through
+lightweight architectures and attention mechanisms {[}11, 14-17{]}.
+However, many approaches segment leaves and lesions in a single network.
+Because severity is calculated as the ratio of lesion area to leaf area,
+errors in either component directly affect the final estimate. In complex
+field images, single-stage segmentation can suffer from feature
+interference between large leaf boundaries and small, irregular lesions,
+leading to unstable severity quantification.
+
+Dual-stage frameworks reduce this interference by separating leaf
+extraction from lesion delineation. Existing methods such as DUNet,
+LD-DeepLabv3+, StripeRustNet, and CL-VW-DeepLabV3+ have demonstrated the
+benefit of task decomposition for disease severity estimation. However,
+field deployment still requires models that balance segmentation
+accuracy, compactness, inference efficiency, and usability on
+resource-constrained devices.
+
+In this study, we propose DSLL-Net, a lightweight dual-stage framework
+for quantitative grapevine downy mildew severity assessment from field
+images. The main contributions are: (1) a task-decoupled leaf--lesion
+segmentation pipeline that reduces interference between leaf boundaries
+and small lesions; (2) a compact leaf segmentation model based on
+SimAM-MobileNetV3 and DeepLabV3+ and an efficient lesion segmentation
+model based on SimAM-EfficientNet-B0 and RepConv U-Net; and (3) a
+severity estimation and mobile deployment workflow validated under field
+conditions.
+
+\hypertarget{materials-and-methods}{%
+\section{Materials and Methods}\label{materials-and-methods}}
+
+\hypertarget{overview-of-the-workflow}{%
+\subsection{Overview of the workflow}\label{overview-of-the-workflow}}
+
+Fig. 1 summarizes the proposed workflow. Field images were annotated to
+construct task-specific datasets for leaf segmentation, lesion
+segmentation, and single-stage comparison. DSLL-Net then performs
+severity estimation in two stages: SimV3-DL3+ first extracts leaf regions
+from complex backgrounds, and SimEffB0-RepUNet subsequently segments
+lesions within the leaf region. Disease severity is calculated as the
+ratio of lesion area to total leaf area and is integrated into a mobile
+application workflow.
+
+\includegraphics[width=5.76806in,height=6.62083in]{DSLL-Net-media/media/image1.png}
+
+Fig. 1. Overall workflow of data preparation, dual-stage model
+development, and mobile application deployment.
+
+\hypertarget{data-preparation}{%
+\subsection{Data Preparation}\label{data-preparation}}
+
+A total of 696 field images were collected between April and August 2024
+at Mingyang and Du'an in Guangxi, China. Images were captured using a
+Huawei P70 and an iPhone 15 at a distance of 15--20 cm, with each image
+focused on a single leaf. Images with clear leaf structures, appropriate
+viewing angles, and no severe occlusion were retained.
+
+Leaf and lesion regions were manually annotated using LabelMe (v3.16.7),
+generating binary masks for leaf/background and lesion/non-lesion
+classes. These annotations were used to construct three datasets for
+leaf segmentation, lesion segmentation, and single-stage lesion
+segmentation, as summarized in Table 1.
+
+Table. 1 An overview of the constructed datasets and their corresponding
+modeling tasks.
+
+\begin{longtable}[]{@{}llllll@{}}
+\toprule
+Dataset & Input to model & Label(s) & Construction & Task & Models using
+it \\
+\midrule
+\endhead
+Leaf segmentation & Original full RGB field image & Leaf mask (binary) &
+Manual annotation on original image & Leaf extraction from background &
+Stage-1 models: DeepLabV3+ (baseline comparisons), SimV3-DL3+ \\
+Lesion segmentation & Cropped leaf ROI & Lesion mask (binary, cropped
+consistently) & Crop leaf regions using leaf masks; pair with cropped
+lesion masks & Fine-grained lesion segmentation within leaf & Stage-2
+models: U-Net family, SimEffB0-RepUNet \\
+Single-stage segmentation & Original full RGB field image & Lesion mask
+(binary) & Original images + lesion masks & Single-stage lesion
+segmentation & Single-stage baselines: U-Net, DeepLabV3+, PSPNet, HRNet,
+SegFormer \\
+\bottomrule
+\end{longtable}
+
+All datasets used the same train--test split: 567 images for training
+and 129 for testing. To match deployment conditions, the second-stage
+lesion model used leaf regions predicted by the first-stage model rather
+than ground-truth leaf masks.
+
+\hypertarget{dual-stage-segmentation-model}{%
+\subsection{Dual-Stage Segmentation
+Model}\label{dual-stage-segmentation-model}}
+
+\hypertarget{leaf-segmentation-model-simv3-dl3}{%
+\subsection{Leaf Segmentation Model
+SimV3-DL3+}\label{leaf-segmentation-model-simv3-dl3}}
+
+The first stage aims to segment leaf regions accurately while keeping the
+model compact for mobile deployment. Five representative segmentation
+models (DeepLabV3+, U-Net, PSPNet, SegFormer, and HRNet) were evaluated,
+and DeepLabV3+ was selected as the baseline because it provided the best
+accuracy with moderate complexity. To improve efficiency, MobileNetV3 was
+used as the backbone. Its original SE module was replaced with SimAM,
+which enhances spatial responses without adding learnable parameters.
+The resulting SimV3-DL3+ model is shown in Fig. 2.
+
+\includegraphics[width=5.63889in,height=5.79167in]{DSLL-Net-media/media/image2.png}
+
+Fig. 2. Architecture of the SimV3-DL3+ model. Sim\_IR denotes the
+InvertedResidual block enhanced with SimAM attention.
+
+\hypertarget{lesion-segmentation-model-simeffb0-repunet}{%
+\subsection{\texorpdfstring{Lesion Segmentation Model (SimEffB0-RepUNet)
+}{Lesion Segmentation Model (SimEffB0-RepUNet) }}\label{lesion-segmentation-model-simeffb0-repunet}}
+
+The second stage focuses on small and irregular lesion regions, where
+boundary precision is more difficult than leaf extraction. U-Net was
+selected as the baseline after comparison with DeepLabV3+, PSPNet,
+SegFormer, and HRNet. To reduce the parameter cost of the conventional
+VGG16 encoder, EfficientNet-B0 was adopted as the encoder. Its SE module
+was replaced with SimAM to improve spatial lesion representation without
+increasing model complexity. RepConv blocks were further introduced in
+the decoder to strengthen feature fusion and boundary reconstruction
+during training while preserving efficient inference after
+re-parameterization. The final model, SimEffB0-RepUNet, is shown in Fig.
+3.
+
+\includegraphics[width=5.625in,height=4.91667in]{DSLL-Net-media/media/image3.png}
+
+Fig. 3. Architecture of SimEffB0-RepUNet, which uses a SimAM-enhanced
+EfficientNet-B0 encoder and RepConv modules in the decoder.
+
+\hypertarget{experimental-design}{%
+\subsection{Experimental design}\label{experimental-design}}
+
+\hypertarget{leaf-segmentation}{%
+\subsection{Leaf segmentation}\label{leaf-segmentation}}
+
+For leaf segmentation, U-Net, DeepLabV3+, PSPNet, HRNet, and SegFormer
+were compared using mPA, IoU-Background, IoU-Leaf, mIoU, parameter count,
+and inference time. IoU-Leaf was treated as the primary metric. Backbone
+selection was then evaluated within DeepLabV3+ using MobileNetV2,
+MobileNetV3, MobileNetV4, StarNetS1, and EfficientNet-B0. Finally,
+MobileNetV3 with SE attention was compared with the SimAM-enhanced
+variant to assess the contribution of parameter-free spatial attention.
+
+\hypertarget{lesion-segmentation}{%
+\subsection{Lesion segmentation}\label{lesion-segmentation}}
+
+For lesion segmentation, candidate architectures were first compared to
+select the baseline, followed by ablation experiments on backbone,
+attention module, and decoder convolution. The evaluated backbones
+included VGG16, ResNet50, ResNetRS50, MobileNetV2, MobileNetV3, and
+EfficientNet-B0. The attention comparison included SE, ECA, CBAM, and
+SimAM, and the decoder comparison included Conv, Conv×2, RepConv, ODConv,
+PConv, and CondConv2D. IoU-Disease was the primary metric, together with
+mPA, IoU-Background, mIoU, parameter count, and inference time.
+
+\hypertarget{model-comparison-experiments}{%
+\subsection{Model Comparison
+Experiments}\label{model-comparison-experiments}}
+
+To evaluate the dual-stage strategy, five single-stage models were
+compared with a conventional DeepLabV3+ + U-Net pipeline and the proposed
+SimV3-DL3+ + SimEffB0-RepUNet pipeline. Performance was measured by
+IoU-Leaf, IoU-Disease, parameter count, and average inference time per
+image. For dual-stage models, inference time included both segmentation
+stages and intermediate processing.
+
+\hypertarget{expert-visual-evaluation-and-model-prediction}{%
+\subsection{Expert Visual Evaluation and Model
+Prediction}\label{expert-visual-evaluation-and-model-prediction}}
+
+To compare automated severity estimation with human judgment, 15 trained
+technicians visually estimated disease severity on representative leaf
+images. Their assessments were compared with model predictions for the
+same images.
+
+\hypertarget{experimental-setup}{%
+\subsection{Experimental setup}\label{experimental-setup}}
+
+Experiments were conducted on an NVIDIA GeForce RTX 4060 Ti GPU with an
+Intel Core i5-13490F CPU and 32 GB RAM. Models were trained in Python 3.8
+with CUDA 11.8 using Adam, a batch size of 2, an initial learning rate of
+\(1 \times 10^{-5}\), cosine annealing to \(1 \times 10^{-6}\), and 500
+epochs. All images were resized to \(512 \times 512\). Dice loss was used:
+
+\begin{equation}
+\mathcal{L}_{D\text{ice}} = 1 - \frac{2|X \cap Y|}{\left| X \right| + |Y|}
+\tag{1}
+\end{equation}
+
+where \(X\) and \(Y\) denote the predicted and ground-truth masks.
+
+\hypertarget{evaluation-metrics}{%
+\subsection{Evaluation metrics}\label{evaluation-metrics}}
+
+Segmentation performance was evaluated using PA, mPA, IoU, and mIoU:
+
+\begin{equation}
+PA = \frac{\sum_{i = 0}^{k}P_{\text{ii}}}{\sum_{i = 0}^{k}{\sum_{j = 0}^{k}P_{\text{ij}}}}
+\tag{2}
+\end{equation}
+
+where \(P_{\text{ii}}\) denotes correctly classified pixels of class
+\(i\), and \(P_{\text{ij}}\) denotes pixels whose ground-truth class is
+\(i\) but are predicted as class \(j\).
+
+\begin{equation}
+\text{mPA} = \frac{1}{K + 1}\sum_{i = 0}^{K}\frac{P_{\text{ii}}}{\sum_{j = 0}^{K} P_{\text{ij}}}
+\tag{3}
+\end{equation}
+
+Here, \(K+1\) is the number of classes including background.
+
+\begin{equation}
+\text{IoU}_{i} = \frac{TP_{i}}{TP_{i} + FP_{i} + FN_{i}}
+\tag{4}
+\end{equation}
+
+where \(TP_{i}\), \(FP_{i}\), and \(FN_{i}\) are true-positive,
+false-positive, and false-negative pixels for class \(i\).
+
+\begin{equation}
+\text{mIoU} = \frac{1}{K + 1}\sum_{i = 0}^{K}\text{IoU}_{i}
+= \frac{1}{K + 1}\sum_{i = 0}^{K}\frac{TP_{i}}{TP_{i} + FP_{i} + FN_{i}}
+\tag{5}
+\end{equation}
+
+Severity estimation was evaluated using \(R^{2}\), MAE, and RMSE:
+
+\begin{equation}
+R^{2} = 1 - \frac{\sum_{i = 1}^{n}\left( y_{i} - {\widetilde{y}}_{i} \right)^{2}}{\sum_{i = 1}^{n}\left( y_{i} - \bar{y} \right)^{2}}
+\tag{6}
+\end{equation}
+
+where \(n\) is the number of samples, \(y_{i}\) and
+\({\widetilde{y}}_{i}\) are the actual and predicted values, and
+\(\bar{y}\) is the mean of all actual values.
+
+\begin{equation}
+\text{MAE} = \frac{1}{n}\sum_{i = 1}^{n}{|y_{i} - {\widetilde{y}}_{i}|}
+\tag{7}
+\end{equation}
+
+
+\begin{equation}
+\text{RMSE} = \sqrt{\frac{1}{n}\sum_{i = 1}^{n}{(y_{i} - {\widetilde{y}}_{i})}^{2}}
+\tag{8}
+\end{equation}
+
+\hypertarget{results}{%
+\section{Results}\label{results}}
+
+\hypertarget{leaf-segmentation-1}{%
+\subsection{Leaf segmentation}\label{leaf-segmentation-1}}
+
+Among the five leaf segmentation models (Fig. 4), DeepLabV3+ achieved
+the best overall accuracy, with an mPA of 99.11\%, IoU-Background of
+98.70\%, IoU-Leaf of 97.49\%, and mIoU of 98.09\%. It also maintained
+moderate model size and inference time, and was therefore selected as the
+baseline for leaf segmentation.
+
+\includegraphics[width=5.76806in,height=4.49514in]{DSLL-Net-media/media/image4.jpeg}
+
+Fig. 4. Leaf segmentation comparison of SegFormer, DeepLabV3+, PSPNet,
+HRNet, and U-Net.
+
+Backbone comparison further showed that Sim\_MobileNetV3 provided the
+best accuracy--efficiency balance (Fig. 5), reaching the highest mPA
+(99.19\%) and mIoU (98.30\%) with only 4.83 M parameters and 20.62 ms
+inference time.
+\includegraphics[width=5.76806in,height=4.23194in]{DSLL-Net-media/media/image5.jpeg}
+
+Fig. 5. Leaf segmentation performance of DeepLabV3+ with different
+backbones.
+
+\hypertarget{lesion-segmentation-1}{%
+\subsection{Lesion segmentation}\label{lesion-segmentation-1}}
+
+For lesion segmentation, U-Net achieved the highest accuracy among the
+candidate architectures (Fig. 6), with an mIoU of 84.97\% and
+IoU-Disease of 73.07\%. Although it had the largest parameter count
+(24.89 M) and longest inference time (51.53 ms), its accuracy made it the
+baseline for subsequent optimization.
+
+\includegraphics[width=5.76806in,height=4.23611in]{DSLL-Net-media/media/image6.png}
+
+Fig. 6. Lesion segmentation comparison of U-Net, SegFormer, PSPNet,
+HRNet, and DeepLabV3+.
+
+Backbone evaluation showed that EfficientNet-B0 achieved the best
+balance for lesion segmentation (Fig. 7), providing the highest mIoU and
+IoU-Disease while reducing parameters by more than 82\% compared with
+ResNet50 and achieving the fastest inference time (25.01 ms).
+
+\includegraphics[width=5.76806in,height=4.23611in]{DSLL-Net-media/media/image7.png}
+
+Fig. 7. Lesion segmentation performance of U-Net with different
+backbones.
+
+Attention comparison indicated that SimAM improved mIoU (85.46\%) and
+IoU-Disease (73.94\%) over SE while reducing the parameter count to 7.05
+M (Fig. 8). It therefore provided the most favorable trade-off among the
+evaluated attention modules.
+
+\includegraphics[width=5.76806in,height=4.23611in]{DSLL-Net-media/media/image8.png}
+
+Fig. 8. Lesion segmentation performance with different attention modules.
+
+Among decoder variants, RepConv achieved the best overall performance
+(Fig. 9), with the highest IoU-Disease (74.30\%) and mIoU (85.64\%), a
+moderate parameter count (7.73 M), and the shortest inference time
+(17.33 ms). RepConv was therefore adopted in the final lesion model.
+
+\includegraphics[width=5.76806in,height=4.14653in]{DSLL-Net-media/media/image9.png}
+
+Fig. 9. Lesion segmentation performance with different decoder
+convolution variants.
+
+Severity estimation based on SimEffB0-RepUNet outputs strongly agreed
+with ground truth (Fig. S1), achieving \(R^{2}=0.976\), MAE = 0.012, and
+RMSE = 0.019 on the test set.
+
+\hypertarget{model-comparison}{%
+\subsection{Model comparison}\label{model-comparison}}
+
+The proposed dual-stage model outperformed both single-stage models and
+the conventional dual-stage baseline (Fig. 10). It achieved 97.76\%
+IoU-Leaf and 74.30\% IoU-Disease with 12.56 M parameters and 2261 ms
+inference time. In comparison, DeepLabV3+ + U-Net reached 97.49\%
+IoU-Leaf and 72.71\% IoU-Disease with 32.04 M parameters and 2303 ms
+inference time. Qualitative results (Fig. S2) further showed that the
+proposed model reduced leaf over-segmentation and improved lesion
+boundary delineation.
+
+\includegraphics[width=5.76806in,height=5.17708in]{DSLL-Net-media/media/image10.jpeg}
+
+Fig. 10. Performance comparison of single-stage and dual-stage
+segmentation models.
+
+\hypertarget{expert-visual-evaluation-and-model-prediction-1}{%
+\subsection{Expert Visual Evaluation and Model
+Prediction}\label{expert-visual-evaluation-and-model-prediction-1}}
+
+Expert visual estimates showed clear inter-observer variability (Fig.
+S3). For a mildly diseased leaf, the mean expert estimate was 4.56\%,
+whereas the model predicted 2.32\%. For a more severely diseased leaf,
+the mean expert estimate (20.01\%) was close to the model prediction
+(19.32\%). These results indicate that automated estimation can reduce
+subjectivity, particularly under mild disease conditions.
+
+\hypertarget{discussion}{%
+\section{Discussion}\label{discussion}}
+
+The results demonstrate that separating leaf and lesion segmentation is
+effective for disease severity quantification under field conditions.
+The first stage provides a reliable leaf area for severity calculation,
+while the second stage focuses on small and irregular symptomatic
+regions. Compared with single-stage models, this task decomposition
+reduces feature interference and improves the stability of lesion
+delineation and severity estimation.
+
+\textbf{Attention-guided lightweight leaf segmentation for robust field
+conditions}
+
+The leaf segmentation results show that DeepLabV3+ with a
+SimAM-enhanced MobileNetV3 backbone improves boundary extraction while
+keeping the model compact. SimAM enhances spatial sensitivity without
+adding parameters, helping suppress background interference and reduce
+over-segmentation. This is important because errors in leaf area directly
+propagate to severity estimation.
+
+\hypertarget{lesion-segmentation-model-performance-enhancement}{%
+\subsection{Lesion segmentation model performance
+enhancement}\label{lesion-segmentation-model-performance-enhancement}}
+
+For lesion segmentation, the performance gains arise from the combined
+use of EfficientNet-B0, SimAM, and RepConv. EfficientNet-B0 provides a
+compact encoder for multi-scale lesion features, SimAM improves spatial
+localization of small symptoms, and RepConv strengthens boundary
+reconstruction during training while preserving inference efficiency.
+Together, these components improve IoU-Disease and mIoU without the
+large parameter cost of heavier U-Net variants.
+
+\hypertarget{performance-of-the-dual-stage-model}{%
+\subsection{Performance of the dual-stage
+model}\label{performance-of-the-dual-stage-model}}
+
+The comparison with single-stage and conventional dual-stage models
+confirms that independent optimization of leaf and lesion segmentation is
+beneficial. The proposed framework improves both leaf and lesion IoU
+while using fewer parameters than the DeepLabV3+ + U-Net baseline. This
+also explains the strong agreement between predicted and reference
+severity values.
+
+\hypertarget{practical-deployment-and-applications}{%
+\subsection{Practical deployment and
+applications}\label{practical-deployment-and-applications}}
+
+To support field use, the model was integrated into a Flutter-based
+Android application (\url{https://github.com/husnxjsjsb/Grape-Downy}).
+This implementation demonstrates the feasibility of deploying the
+proposed framework for portable disease monitoring and decision support.
+
+\hypertarget{limitations}{%
+\subsection{Limitations}\label{limitations}}
+
+Several limitations remain. DSLL-Net uses two networks and is therefore
+slower than some single-stage alternatives. The current evaluation
+focuses on one crop-disease system, so broader validation across crops,
+diseases, sensors, and field environments is needed. Pixel-level
+annotation is also labor-intensive; semi-supervised or weakly supervised
+learning may reduce this cost. Finally, severity is estimated from lesion
+area alone, and future work may incorporate temporal or multispectral
+information.
+
+\hypertarget{conclusion}{%
+\section{Conclusion}\label{conclusion}}
+
+This study proposes DSLL-Net, a lightweight dual-stage framework for
+grapevine downy mildew severity assessment. SimV3-DL3+ extracts leaf
+regions from field backgrounds, while SimEffB0-RepUNet segments small
+and irregular lesions using a SimAM-EfficientNet-B0 encoder and RepConv
+decoder. The final model achieved 74.3\% IoU-Disease with 12.56 M
+parameters and produced severity estimates highly consistent with
+reference values (\(R^{2}=0.976\)). These results indicate that DSLL-Net
+provides an efficient and deployable solution for quantitative disease
+monitoring. Future work will expand validation across more crops,
+diseases, and field conditions and further optimize edge-device
+deployment.
+
+\hypertarget{data-and-code-availability}{%
+\section{Data and code availability}\label{data-and-code-availability}}
+
+The data and code used in this study are available on GitHub (
+\href{https://github.com/husnxjsjsb/Grape-Downy}{https://github.com/}).
+
+\hypertarget{author-contribution-statement}{%
+\section{Author contribution
+statement}\label{author-contribution-statement}}
+
+Changqing Yan, Gang Zhao: Writing -- review \& editing, Validation,
+Supervision, Resources, Project administration, Methodology, Funding
+acquisition, Conceptualization. Shuyang Li: Writing -- original draft,
+Visualization, Validation, Methodology, Data curation,
+Conceptualization. Ling Yin: Supervision, project administration,
+funding acquisition. Zhe Liu, Shumei Wei, Xin Lin, Xin Li, Jindong Liu,
+Zhenpeng Huang, Danni Zheng, Zeyun Liang, Linjia Yao, Bin Chen, Qi Tian:
+Data curation, Investigation, Validation, Writing -- review \& editing.
+Chenliang Wang, Junjie Qu: Writing -- review \& editing, Visualization,
+Validation, Data curation.
+
+\hypertarget{declaration-of-competing-interest}{%
+\section{Declaration of competing
+interest}\label{declaration-of-competing-interest}}
+
+The authors declare that they have no known competing financial
+interests or personal relationships that could have appeared to
+influence the work reported in this paper.
+
+\hypertarget{acknowledgments}{%
+\section{Acknowledgments}\label{acknowledgments}}
+
+The authors gratefully acknowledge financial support from the Key
+Research and Development Program of Shaanxi (Grant No. 2023-ZDLNY-64),
+Guangxi Key R\&D Program Project (Grant No. Gui Ke AB24010121).
+
+\hypertarget{supplementary-materials}{%
+\section{Supplementary Materials}\label{supplementary-materials}}
+
+Figs.S1-Figs.S4: Fig.S1 Fig.S2 Fig.S3 Fig.S4.
+
+\hypertarget{references}{%
+\section{References}\label{references}}
+
+{[}1{]} L. Guo \emph{et al.}, ``Super pangenome of Vitis empowers
+identification of downy mildew resistance genes for grapevine
+improvement,'' \emph{Nature Genetics}, vol. 57, no. 3, pp. 741--753,
+Mar. 2025, doi: 10.1038/s41588-025-02111-7.{[}2{]} L. Bin, Z. Ding, L.
+Tian, D. He, S. Li, and H. Wang, ``Grape Leaf Disease Identification
+Using Improved Deep Convolutional Neural Networks,'' \emph{Frontiers in
+Plant Science}, vol. 11, p. 1082, Jul. 2020, doi:
+10.3389/fpls.2020.01082.{[}3{]} W. Hui \emph{et al.}, ``Adoption of
+Sobol's analysis method improved the application of a coupled primary
+and secondary infection grape downy mildew model in northern China,''
+\emph{Computers and Electronics in Agriculture}, vol. 199, p. 107154,
+2022, doi: https://doi.org/10.1016/j.compag.2022.107154.{[}4{]} S.
+Savary, A. Ficke, J.-N. Aubertot, and C. Hollier, ``Crop losses due to
+diseases and their implications for global food production losses and
+food security,'' \emph{Food security}, vol. 4, no. 4, pp. 519--537,
+2012.{[}5{]} Y. Wang \emph{et al.}, ``High-efficiency fungicide
+screening and field control efficacy of maize southern corn rust,''
+\emph{Crop Protection}, vol. 187, p. 106997, 2025.{[}6{]} M. Ji, L.
+Zhang, and Q. Wu, ``Automatic grape leaf diseases identification via
+UnitedModel based on multiple convolutional neural networks,''
+\emph{Information Processing in Agriculture}, vol. 7, no. 3, pp.
+418--426, 2020, doi: https://doi.org/10.1016/j.inpa.2019.10.003.{[}7{]}
+N. R. Kolhalkar and V. L. Krishnan, ``Mechatronics system for diagnosis
+and treatment of major diseases in grape vineyards based on image
+processing,'' \emph{Materials Today: Proceedings}, vol. 23, pp.
+549--556, 2020, doi: https://doi.org/10.1016/j.matpr.2019.05.407.{[}8{]}
+L. I. Cazón, J. A. Paredes, N. R. González, E. C. Conforto, L. Suarez,
+and E. M. Del Ponte, ``Optimizing visual estimation of peanut late leaf
+spot severity with online training sessions and standard area
+diagrams,'' \emph{European Journal of Plant Pathology}, pp. 1--15,
+2025.{[}9{]} T. Shi \emph{et al.}, ``Recent advances in plant disease
+severity assessment using convolutional neural networks,''
+\emph{Scientific Reports}, vol. 13, no. 1, p. 2336, Feb. 2023, doi:
+10.1038/s41598-023-29230-7.{[}10{]} K. Li, L. Zhang, B. Li, S. Li, and
+J. Ma, ``Attention-optimized DeepLab V3\,+\,for automatic estimation of
+cucumber disease severity,'' \emph{Plant Methods}, vol. 18, no. 1, p.
+109, Sep. 2022, doi: 10.1186/s13007-022-00941-8.{[}11{]} J. G. M.
+Esgario, R. A. Krohling, and J. A. Ventura, ``Deep learning for
+classification and severity estimation of coffee leaf biotic stress,''
+\emph{Computers and Electronics in Agriculture}, vol. 169, p. 105162,
+2020, doi: https://doi.org/10.1016/j.compag.2019.105162.{[}12{]} I.
+Hernández \emph{et al.}, ``Assessment of downy mildew in grapevine using
+computer vision and fuzzy logic. Development and validation of a new
+method,'' \emph{OENO One}, vol. 56, no. 3, pp. 41--53, Jul. 2022, doi:
+10.20870/oeno-one.2022.56.3.5359.{[}13{]} Q. Liang, S. Xiang, Y. Hu, G.
+Coppola, D. Zhang, and W. Sun, ``PD2SE-Net: Computer-assisted plant
+disease diagnosis and severity estimation network,'' \emph{Computers and
+Electronics in Agriculture}, vol. 157, pp. 518--529, 2019, doi:
+https://doi.org/10.1016/j.compag.2019.01.034.{[}14{]} Z. Wang, L. Yang,
+R. Wang, L. Lei, H. Ding, and Q. Yang, ``WE-DeepLabV3+: A lightweight
+segmentation model for Panax notoginseng leaf diseases,''
+\emph{Computers and Electronics in Agriculture}, vol. 227, p. 109612,
+2024, doi: https://doi.org/10.1016/j.compag.2024.109612.{[}15{]} C. Zhao
+\emph{et al.}, ``Plant Disease Segmentation Networks for Fast Automatic
+Severity Estimation Under Natural Field Scenarios,'' \emph{Agriculture},
+vol. 15, no. 6, 2025, doi: 10.3390/agriculture15060583.{[}16{]} I.
+Hernández, R. Silva, P. Melo-Pinto, S. Gutiérrez, and J. Tardaguila,
+``Early detection of downy mildew in vineyards using deep neural
+networks for semantic segmentation,'' \emph{Biosystems Engineering},
+vol. 252, pp. 15--31, 2025, doi:
+https://doi.org/10.1016/j.biosystemseng.2025.02.007.{[}17{]} L.-C. Chen,
+Y. Zhu, G. Papandreou, F. Schroff, and H. Adam, ``Encoder-Decoder with
+Atrous Separable Convolution for Semantic Image Segmentation,'' Aug. 22,
+2018, \emph{arXiv}: arXiv:1802.02611. doi:
+10.48550/arXiv.1802.02611.{[}18{]} V. Iglovikov and A. Shvets,
+``TernausNet: U-Net with VGG11 Encoder Pre-Trained on ImageNet for Image
+Segmentation,'' 2018, \emph{arXiv}: arXiv:1801.05746. doi:
+10.48550/arXiv.1801.05746.{[}19{]} H. Zhao, J. Shi, X. Qi, X. Wang, and
+J. Jia, ``Pyramid Scene Parsing Network,'' in \emph{2017 IEEE Conference
+on Computer Vision and Pattern Recognition (CVPR)}, 2017, pp.
+6230--6239. doi: 10.1109/CVPR.2017.660.{[}20{]} E. Xie, W. Wang, Z. Yu,
+A. Anandkumar, J. M. Alvarez, and P. Luo, ``SegFormer: simple and
+efficient design for semantic segmentation with transformers,'' in
+\emph{Proceedings of the 35th International Conference on Neural
+Information Processing Systems}, in NIPS '21. Red Hook, NY, USA: Curran
+Associates Inc., 2021.{[}21{]} J. Wang \emph{et al.}, ``Deep
+High-Resolution Representation Learning for Visual Recognition,''
+\emph{IEEE Transactions on Pattern Analysis and Machine Intelligence},
+vol. 43, no. 10, pp. 3349--3364, 2021, doi:
+10.1109/TPAMI.2020.2983686.{[}22{]} A. Howard \emph{et al.}, ``Searching
+for MobileNetV3,'' in \emph{2019 IEEE/CVF International Conference on
+Computer Vision (ICCV)}, 2019, pp. 1314--1324. doi:
+10.1109/ICCV.2019.00140.{[}23{]} M. Sandler, A. Howard, M. Zhu, A.
+Zhmoginov, and L.-C. Chen, ``MobileNetV2: Inverted Residuals and Linear
+Bottlenecks,'' in \emph{2018 IEEE/CVF Conference on Computer Vision and
+Pattern Recognition}, 2018, pp. 4510--4520. doi:
+10.1109/CVPR.2018.00474.{[}24{]} D. Qin \emph{et al.}, ``MobileNetV4:
+Universal Models for Mobile Ecosystem,'' in \emph{Computer Vision --
+ECCV 2024: 18th European Conference, Milan, Italy, September 29--October
+4, 2024, Proceedings, Part XL}, Berlin, Heidelberg: Springer-Verlag,
+2024, pp. 78--96. doi: 10.1007/978-3-031-73661-2\_5.{[}25{]} J. Hu, L.
+Shen, and G. Sun, ``Squeeze-and-Excitation Networks,'' in \emph{2018
+IEEE/CVF Conference on Computer Vision and Pattern Recognition}, 2018,
+pp. 7132--7141. doi: 10.1109/CVPR.2018.00745.{[}26{]} L. Yang, R.-Y.
+Zhang, L. Li, and X. Xie, ``SimAM: A Simple, Parameter-Free Attention
+Module for Convolutional Neural Networks,'' in \emph{International
+Conference on Machine Learning}, 2021. {[}Online{]}. Available:
+https://api.semanticscholar.org/CorpusID:235825945{[}27{]} X. Ding, X.
+Zhang, N. Ma, J. Han, G. Ding, and J. Sun, ``RepVGG: Making VGG-style
+ConvNets Great Again,'' in \emph{2021 IEEE/CVF Conference on Computer
+Vision and Pattern Recognition (CVPR)}, 2021, pp. 13728--13737. doi:
+10.1109/CVPR46437.2021.01352.{[}28{]} X. Ma, X. Dai, Y. Bai, Y. Wang,
+and Y. Fu, ``Rewrite the Stars,'' in \emph{2024 IEEE/CVF Conference on
+Computer Vision and Pattern Recognition (CVPR)}, 2024, pp. 5694--5703.
+doi: 10.1109/CVPR52733.2024.00544.{[}29{]} K. He, X. Zhang, S. Ren, and
+J. Sun, ``Deep Residual Learning for Image Recognition,'' in \emph{2016
+IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
+2016, pp. 770--778. doi: 10.1109/CVPR.2016.90.{[}30{]} Q. Wang, B. Wu,
+P. Zhu, P. Li, W. Zuo, and Q. Hu, ``ECA-Net: Efficient Channel Attention
+for Deep Convolutional Neural Networks,'' in \emph{2020 IEEE/CVF
+Conference on Computer Vision and Pattern Recognition (CVPR)}, 2020, pp.
+11531--11539. doi: 10.1109/CVPR42600.2020.01155.{[}31{]} S. Woo, J.
+Park, J.-Y. Lee, and I. S. Kweon, ``CBAM: Convolutional Block Attention
+Module,'' in \emph{Computer Vision -- ECCV 2018: 15th European
+Conference, Munich, Germany, September 8--14, 2018, Proceedings, Part
+VII}, Berlin, Heidelberg: Springer-Verlag, 2018, pp. 3--19. doi:
+10.1007/978-3-030-01234-2\_1.{[}32{]} L. Bai and Z. J. Song,
+``Omni-dimensional dynamic convolution with coordinate attention
+detection scheme,'' \emph{Science Progress}, vol. 108, no. 2, p.
+00368504251336695, 2025, doi: 10.1177/00368504251336695.{[}33{]} J. Chen
+\emph{et al.}, ``Run, Don't Walk: Chasing Higher FLOPS for Faster Neural
+Networks,'' in \emph{2023 IEEE/CVF Conference on Computer Vision and
+Pattern Recognition (CVPR)}, 2023, pp. 12021--12031. doi:
+10.1109/CVPR52729.2023.01157.{[}34{]} B. Yang, G. Bender, Q. V. Le, and
+J. Ngiam, ``CondConv: conditionally parameterized convolutions for
+efficient inference,'' in \emph{Proceedings of the 33rd International
+Conference on Neural Information Processing Systems}, Red Hook, NY, USA:
+Curran Associates Inc., 2019.{[}35{]} X. Dong \emph{et al.}, ``Detection
+of pine wilt disease infected pine trees using YOLOv5 optimized by
+attention mechanisms and loss functions,'' \emph{Ecological Indicators},
+vol. 168, p. 112764, Nov. 2024, doi:
+10.1016/j.ecolind.2024.112764.{[}36{]} F. Wen \emph{et al.}, ``Accurate
+recognition and segmentation of northern corn leaf blight in drone RGB
+Images: A CycleGAN-augmented YOLOv5-Mobile-Seg lightweight network
+approach,'' \emph{Computers and Electronics in Agriculture}, vol. 236,
+p. 110433, Sep. 2025, doi: 10.1016/j.compag.2025.110433.{[}37{]} J. Zi,
+W. Hu, G. Fan, F. Chen, and Y. Chen, ``SFL-MobileNetV3: A lightweight
+network for weed recognition in tropical cassava fields in China,''
+\emph{Expert Systems with Applications}, vol. 277, p. 127196, 2025, doi:
+https://doi.org/10.1016/j.eswa.2025.127196.{[}38{]} M. Parajuli, M.
+Shaban, and T. L. Phung, ``Automated differentiation of skin melanocytes
+from keratinocytes in high-resolution histopathology images using a
+weakly-supervised deep-learning framework,'' \emph{Int. J. Imaging Syst.
+Technol.}, vol. 33, pp. 262-\/-275, 2023, doi:
+10.1002/IMA.22810.{[}39{]} C. Lin, P. Yang, Q. Wang, Z. Qiu, W. Lv, and
+Z. Wang, ``Efficient and accurate compound scaling for convolutional
+neural networks,'' \emph{Neural Networks}, vol. 167, pp. 787--797,
+2023.{[}40{]} B. Zhang \emph{et al.}, ``Multi-scale segmentation
+squeeze-and-excitation UNet with conditional random field for segmenting
+lung tumor from CT images,'' \emph{Computer Methods and Programs in
+Biomedicine}, vol. 222, p. 106946, 2022.{[}41{]} C. Zhang, Y. Zhang, and
+X. Xu, ``Dilated inception U-Net with attention for crop pest image
+segmentation in real-field environment,'' \emph{Smart Agricultural
+Technology}, vol. 11, p. 100917, Aug. 2025, doi:
+10.1016/j.atech.2025.100917.{[}42{]} R. Gu and L. Liu, ``An agricultural
+leaf disease segmentation model applying multi-scale coordinate
+attention mechanism,'' \emph{Applied Soft Computing}, vol. 172, p.
+112904, Mar. 2025, doi: 10.1016/j.asoc.2025.112904.{[}43{]} C. Wang, P.
+Du, H. Wu, J. Li, C. Zhao, and H. Zhu, ``A cucumber leaf disease
+severity classification method based on the fusion of DeepLabV3+ and
+U-Net,'' \emph{Computers and Electronics in Agriculture}, vol. 189, p.
+106373, 2021, doi: https://doi.org/10.1016/j.compag.2021.106373.{[}44{]}
+Y. Xu \emph{et al.}, ``Accurate cotton verticillium wilt segmentation in
+field background based on the two-stage lightweight DeepLabV3+ model,''
+\emph{Computers and Electronics in Agriculture}, vol. 229, p. 109814,
+2025, doi: https://doi.org/10.1016/j.compag.2024.109814.{[}45{]} L. G.
+Divyanth, A. Ahmad, and D. Saraswat, ``A two-stage deep-learning based
+segmentation model for crop disease quantification based on corn field
+imagery,'' \emph{Smart Agricultural Technology}, vol. 3, p. 100108,
+2023, doi: https://doi.org/10.1016/j.atech.2022.100108.{[}46{]} B.-Y.
+Liu, K.-J. Fan, W.-H. Su, and Y. Peng, ``Two-Stage Convolutional Neural
+Networks for Diagnosing the Severity of Alternaria Leaf Blotch Disease
+of the Apple Tree,'' \emph{Remote Sensing}, vol. 14, no. 11, 2022, doi:
+10.3390/rs14112519.{[}47{]} W. Liu \emph{et al.}, ``StripeRust-Pocket: A
+Mobile-Based Deep Learning Application for Efficient Disease Severity
+Assessment of Wheat Stripe Rust,'' \emph{Plant Phenomics}, vol. 6, p.
+0201, 2024, doi: 10.34133/plantphenomics.0201.
+
+\end{document}

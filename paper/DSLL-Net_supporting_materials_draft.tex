@@ -1,0 +1,64 @@
+\section*{Supporting Materials Draft}
+
+\subsection*{S1. Dataset construction and annotation}
+
+Field images were collected from two vineyard sites in Guangxi, China
+between April and August 2024. Images were captured using two consumer
+smartphones at a distance of approximately 15--20 cm. Each image focused
+on a single leaf. Images with severe blur, strong direct sunlight,
+incomplete leaves, or heavy occlusion were excluded before annotation.
+
+Leaf and lesion regions were annotated using LabelMe. Two binary masks
+were generated for each image: a leaf mask for leaf/background
+segmentation and a lesion mask for lesion/non-lesion segmentation. Three
+datasets were then constructed: the original full-field images for leaf
+segmentation, cropped leaf regions for lesion segmentation, and original
+images paired with lesion masks for single-stage comparison.
+
+\subsection*{S2. Additional model design details}
+
+The first stage uses DeepLabV3+ because its multi-scale context
+aggregation is suitable for complete leaf extraction under complex
+backgrounds. MobileNetV3 was selected as a compact backbone, and its SE
+attention was replaced by SimAM to improve spatial sensitivity without
+adding learnable parameters.
+
+The second stage uses a U-Net framework because skip connections and
+decoder reconstruction are effective for small lesion regions.
+EfficientNet-B0 replaces the heavier VGG16 encoder to reduce parameter
+cost while retaining multi-scale feature extraction. RepConv is used in
+the decoder because it provides multi-branch representation during
+training and can be re-parameterized into a single convolution during
+inference.
+
+\subsection*{S3. Additional ablation settings}
+
+For leaf segmentation, the compared segmentation architectures included
+U-Net, DeepLabV3+, PSPNet, HRNet, and SegFormer. Backbone comparison was
+conducted within DeepLabV3+ using MobileNetV2, MobileNetV3, MobileNetV4,
+StarNetS1, and EfficientNet-B0. The effect of attention was evaluated by
+comparing MobileNetV3-SE with SimAM-enhanced MobileNetV3.
+
+For lesion segmentation, the compared backbones included VGG16,
+ResNet50, ResNetRS50, MobileNetV2, MobileNetV3, and EfficientNet-B0.
+Attention modules included SE, ECA, CBAM, and SimAM. Decoder convolution
+variants included Conv, Conv×2, RepConv, ODConv, PConv, and CondConv2D.
+
+\subsection*{S4. Expert visual evaluation}
+
+Fifteen trained technicians independently estimated disease severity
+from representative leaf images without quantitative tools. Their
+estimates were compared with model predictions to evaluate consistency
+between visual assessment and automated severity quantification. Expert
+estimates showed greater variability under mild disease symptoms,
+indicating that model-based pixel-level quantification can reduce
+subjectivity in early-stage disease assessment.
+
+\subsection*{S5. Deployment notes}
+
+The proposed framework was integrated into a Flutter-based Android
+application. The application supports image input, model inference,
+segmentation visualization, and disease severity output. This deployment
+demonstrates the feasibility of using DSLL-Net for portable field
+monitoring, although further optimization is needed for faster inference
+on edge devices.
